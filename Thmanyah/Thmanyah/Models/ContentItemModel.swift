@@ -6,9 +6,26 @@ struct ContentItem: Identifiable, Codable {
     let description: String?
     let avatar_url: String
     let author_name: String?
+    let duration: Int?
+    let priority: Int?
+    let episode_count: Int?
+    
+    var formattedDuration: String? {
+        guard let duration = duration else { return nil }
+        print("\n\n Duration: \(duration)")
+        let hours = duration / 3600
+        let minutes = (duration % 3600) / 60
+        
+        switch (hours, minutes) {
+            case (0, 0): return nil
+            case (0, let m): return "\(m) min"
+            case (let h, 0): return "\(h) h"
+            default: return "\(hours) h \(minutes) min"
+        }
+    }
     
     enum CodingKeys: String, CodingKey {
-        case name, description, avatar_url, author_name
+        case name, description, avatar_url, author_name, duration, priority, episode_count
         case podcast_id, episode_id, audiobook_id, article_id
     }
     
@@ -31,6 +48,9 @@ struct ContentItem: Identifiable, Codable {
         description = try? container.decode(String.self, forKey: .description)
         avatar_url = try container.decode(String.self, forKey: .avatar_url)
         author_name = try? container.decode(String.self, forKey: .author_name)
+        duration = try? container.decode(Int.self, forKey: .duration)
+        priority = try? container.decode(Int.self, forKey: .priority)
+        episode_count = try? container.decode(Int.self, forKey: .episode_count)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -39,5 +59,8 @@ struct ContentItem: Identifiable, Codable {
         try container.encodeIfPresent(description, forKey: .description)
         try container.encode(avatar_url, forKey: .avatar_url)
         try container.encodeIfPresent(author_name, forKey: .author_name)
+        try container.encodeIfPresent(duration, forKey: .duration)
+        try container.encodeIfPresent(priority, forKey: .priority)
+        try container.encodeIfPresent(episode_count, forKey: .episode_count)
     }
 }

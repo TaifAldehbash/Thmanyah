@@ -1,10 +1,33 @@
 struct HomeSection: Codable, Identifiable {
-    var id: String { name + String(order) }
+    var id: String { name + String(order ?? -1) }
     let name: String
     let type: SectionLayout
     let content_type: ContentType
-    let order: Int
+    let order: Int?
     let content: [ContentItem]
+    
+    enum CodingKeys: String, CodingKey {
+        case name, type, content_type, order, content
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        name = try container.decode(String.self, forKey: .name)
+        type = try container.decode(SectionLayout.self, forKey: .type)
+        content_type = try container.decode(ContentType.self, forKey: .content_type)
+        content = try container.decode([ContentItem].self, forKey: .content)
+        
+        // Try decoding order as Int or String, fallback to nil
+        if let intValue = try? container.decode(Int.self, forKey: .order) {
+            order = intValue
+        } else if let stringValue = try? container.decode(String.self, forKey: .order),
+                  let intFromString = Int(stringValue) {
+            order = intFromString
+        } else {
+            order = nil
+        }
+    }
 }
 
 enum SectionLayout: String, Codable {
@@ -27,8 +50,7 @@ enum SectionLayout: String, Codable {
             case "queue":
                 self = .queue
             default:
-                throw DecodingError.dataCorruptedError(in: container,
-                                                       debugDescription: "Unknown section type: \(raw)")
+                self = .square
         }
     }
     
@@ -48,4 +70,10 @@ enum ContentType: String, Codable {
     case episode
     case audioBook = "audio_book"
     case audioArticle = "audio_article"
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = ContentType(rawValue: rawValue) ?? .podcast
+    }
 }
