@@ -5,12 +5,18 @@ import UIKit
 class HomeViewModel: ObservableObject {
     @Published var sections: [HomeSection] = []
     @Published var isLoading = false
-    private var nextPage: String?
+    internal var nextPage: String?
+    
+    private let apiService: APIServiceProtocol
+    
+    init(apiService: APIServiceProtocol = APIService.shared) {
+        self.apiService = apiService
+    }
     
     func loadInitialSections() async {
         isLoading = true
         do {
-            let (fetchedSections, next) = try await APIService.shared.fetchHomeSections()
+            let (fetchedSections, next) = try await apiService.fetchHomeSections(from: nil)
             self.sections = fetchedSections
             self.nextPage = next
         } catch {
@@ -25,7 +31,7 @@ class HomeViewModel: ObservableObject {
         
         isLoading = true
         do {
-            let (fetchedSections, next) = try await APIService.shared.fetchHomeSections(from: "https://api-v2-b2sit6oh3a-uc.a.run.app\(nextPage)")
+            let (fetchedSections, next) = try await apiService.fetchHomeSections(from: "https://api-v2-b2sit6oh3a-uc.a.run.app\(nextPage)")
             self.sections.append(contentsOf: fetchedSections)
             self.nextPage = next
         } catch {

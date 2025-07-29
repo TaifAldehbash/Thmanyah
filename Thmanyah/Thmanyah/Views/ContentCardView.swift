@@ -98,6 +98,7 @@ struct ContentCardView: View {
                     .frame(maxWidth: .infinity, maxHeight: 180)
                     .clipped()
                     .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 0)
                     
                     //            Title
                     Text(item.name)
@@ -108,7 +109,7 @@ struct ContentCardView: View {
                 }
                 .frame(width: 264, height: 230)
                 
-                .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 0)
+                
                 
                 
             case .square:

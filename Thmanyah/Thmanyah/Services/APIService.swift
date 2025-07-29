@@ -1,10 +1,18 @@
 import Foundation
 
+protocol APIServiceProtocol {
+    func fetchHomeSections(from urlString: String?) async throws -> (sections: [HomeSection], nextPage: String?)
+    func search(query: String) async throws -> [HomeSection]
+}
+
+extension APIService: APIServiceProtocol {}
+
 class APIService {
     static let shared = APIService()
     private init() {}
     
-    func fetchHomeSections(from urlString: String = "https://api-v2-b2sit6oh3a-uc.a.run.app/home_sections") async throws -> (sections: [HomeSection], nextPage: String?) {
+    func fetchHomeSections(from urlString: String? = nil) async throws -> (sections: [HomeSection], nextPage: String?) {
+        let urlString = urlString ?? "https://api-v2-b2sit6oh3a-uc.a.run.app/home_sections"
         guard let url = URL(string: urlString) else {
             throw URLError(.badURL)
         }

@@ -9,6 +9,12 @@ class SearchViewModel: ObservableObject {
     
     private let debouncer = Debouncer()
     
+    private let apiService: APIServiceProtocol
+    
+    init(apiService: APIServiceProtocol = APIService.shared) {
+        self.apiService = apiService
+    }
+    
     func onQueryChanged(_ newValue: String) {
         debouncer.debounce(delay: 0.2) {
             Task { await self.performSearch() }
@@ -24,7 +30,7 @@ class SearchViewModel: ObservableObject {
         
         isLoading = true
         do {
-            let fetched = try await APIService.shared.search(query: query)
+            let fetched = try await apiService.search(query: query)
             results = fetched
             isEmpty = fetched.isEmpty
         } catch {
