@@ -9,5 +9,12 @@
 		<string>IBMPlexMono-Medium.ttf</string>
 		<string>IBMPlexMono-SemiBold.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>RedColor</string>
+		<key>UIImageName</key>
+		<string>Logo</string>
+	</dict>
 </dict>
 </plist>
